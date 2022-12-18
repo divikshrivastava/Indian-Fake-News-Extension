@@ -1,0 +1,51 @@
+<script>
+    function onButtonClick() {
+      document.getElementById("bicon").src = "progress.gif";
+      document.getElementById("blabel").innerHTML = "Sending";
+      document.getElementById("message").disabled = true;
+  
+      var text = document.getElementById("message").value;
+      var url = "http://username:password@twitter.com/statuses/update.xml?status=" + escape(text);
+      var server = new XMLHttpRequest();
+      
+      server.onload = function() {
+        document.getElementById("bicon").src = "send.png";
+        document.getElementById("blabel").innerHTML = "Send";
+        document.getElementById("message").disabled = false;
+        document.getElementById("message").value = "";
+      }
+  
+      server.open("POST", url);
+      server.send(null);
+    }
+  
+    function onLoadMessages() {
+      var url = "http://username:password@twitter.com/statuses/mentions.json";
+      var server = new XMLHttpRequest();
+      server.onload = function() {
+        var messages = JSON.parse(server.responseText);
+        document.getElementById("messages").innerHTML = "";
+  
+        for (var i = 0; i < 5; i++) 
+          document.getElementById("messages").innerHTML +=
+            '<img style="padding-left: 5px; padding-right: 5px;" width="16" height="16" src="' +
+            messages[i]["user"]["profile_image_url"] +'" /><div>' +
+            messages[i]["user"]["name"] + ": " + messages[i]["text"] + "</div>";
+      }
+      server.open("GET", url);
+      server.send(null);
+    }
+  </script>
+  
+  <img src="twitter.png">
+  <input id="message" type="text" />
+  <div class="toolstrip-button" onclick="onButtonClick()">
+    <img id="bicon" src="send.png">
+    <span id="blabel">Send</span>
+  </div>
+  
+  <div class="toolstrip-button" onclick="onLoadMessages()">
+    <img src="refresh.png">
+  </div>
+  
+  <marquee style="border-left: 1px solid lightblue;" id="messages" width="40%"></marquee>
